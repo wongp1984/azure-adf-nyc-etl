@@ -1,0 +1,207 @@
+resource "azurerm_data_factory_pipeline" "pipeline_ETL_NYC_Payroll" {
+  name            = "pipeline_ETL_NYC_Payroll"
+  data_factory_id = azurerm_data_factory.myadf.id
+
+  activities_json = <<JSON
+                        [
+                            {
+                                "name": "dataflow_agency",
+                                "type": "ExecuteDataFlow",
+                                "dependsOn": [],
+                                "policy": {
+                                    "timeout": "0.12:00:00",
+                                    "retry": 0,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "dataflow": {
+                                        "referenceName": "dataflow_Payroll_AGENCY_MD",
+                                        "type": "DataFlowReference"
+                                    },
+                                    "compute": {
+                                        "coreCount": 8,
+                                        "computeType": "General"
+                                    },
+                                    "traceLevel": "Fine"
+                                }
+                            },
+                            {
+                                "name": "dataflow_emp",
+                                "type": "ExecuteDataFlow",
+                                "dependsOn": [],
+                                "policy": {
+                                    "timeout": "0.12:00:00",
+                                    "retry": 0,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "dataflow": {
+                                        "referenceName": "dataflow_NYC_Payroll_EMP_MD",
+                                        "type": "DataFlowReference"
+                                    },
+                                    "compute": {
+                                        "coreCount": 8,
+                                        "computeType": "General"
+                                    },
+                                    "traceLevel": "Fine"
+                                }
+                            },
+                            {
+                                "name": "dataflow_title",
+                                "type": "ExecuteDataFlow",
+                                "dependsOn": [],
+                                "policy": {
+                                    "timeout": "0.12:00:00",
+                                    "retry": 0,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "dataflow": {
+                                        "referenceName": "dataflow_NYC_Payroll_TITLE_MD",
+                                        "type": "DataFlowReference"
+                                    },
+                                    "compute": {
+                                        "coreCount": 8,
+                                        "computeType": "General"
+                                    },
+                                    "traceLevel": "Fine"
+                                }
+                            },
+                            {
+                                "name": "dataflow_nycpayroll2020",
+                                "type": "ExecuteDataFlow",
+                                "dependsOn": [
+                                    {
+                                        "activity": "dataflow_agency",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    },
+                                    {
+                                        "activity": "dataflow_emp",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    },
+                                    {
+                                        "activity": "dataflow_title",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "0.12:00:00",
+                                    "retry": 0,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "dataflow": {
+                                        "referenceName": "dataflow_nycpayroll2020",
+                                        "type": "DataFlowReference"
+                                    },
+                                    "compute": {
+                                        "coreCount": 8,
+                                        "computeType": "General"
+                                    },
+                                    "traceLevel": "Fine"
+                                }
+                            },
+                            {
+                                "name": "dataflow_nycpayroll2021",
+                                "type": "ExecuteDataFlow",
+                                "dependsOn": [
+                                    {
+                                        "activity": "dataflow_agency",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    },
+                                    {
+                                        "activity": "dataflow_emp",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    },
+                                    {
+                                        "activity": "dataflow_title",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "0.12:00:00",
+                                    "retry": 0,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "dataflow": {
+                                        "referenceName": "dataflow_nycpayroll2021",
+                                        "type": "DataFlowReference"
+                                    },
+                                    "compute": {
+                                        "coreCount": 8,
+                                        "computeType": "General"
+                                    },
+                                    "traceLevel": "Fine"
+                                }
+                            },
+                            {
+                                "name": "dataflow_summary",
+                                "type": "ExecuteDataFlow",
+                                "dependsOn": [
+                                    {
+                                        "activity": "dataflow_nycpayroll2020",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    },
+                                    {
+                                        "activity": "dataflow_nycpayroll2021",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "0.12:00:00",
+                                    "retry": 0,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "dataflow": {
+                                        "referenceName": "dataflow_summary",
+                                        "type": "DataFlowReference",
+                                        "parameters": {
+                                            "dataflow_param_fiscalyear": "2020"
+                                        }
+                                    },
+                                    "compute": {
+                                        "coreCount": 8,
+                                        "computeType": "General"
+                                    },
+                                    "traceLevel": "Fine"
+                                }
+                            }
+                        ]
+                        JSON
+}
