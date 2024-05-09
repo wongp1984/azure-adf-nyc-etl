@@ -21,3 +21,5 @@ In the summary dataflow, the two transaction tables in 2020 and 2021 are unioned
 
 An external table in Azure Synapse Serverless SQL pool is created to query the aggregated data stored in the staging folder in the Datalake Gen2 storage account. It's implementation can be referred in this [repo](https://github.com/wongp1984/azure-synapse-nyc-etl).
 
+### IaC
+The whole implementation of this pipeline can be reconstructed using these terraform [scripts](https://github.com/wongp1984/azure-adf-nyc-etl/tree/main/terraform). 
