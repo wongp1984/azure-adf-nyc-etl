@@ -66,7 +66,6 @@ module "sql_database_module"{
   sqladmin_user_name = "sqladmin"
   sqladmin_user_password = var.sqladmin_secret
   create_table_sql_path = "createtables.sql"
-  # client_ip_address = "94.195.240.44"
   client_ip_address = data.external.myipaddr.result.ip
 }
 
